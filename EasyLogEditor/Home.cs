@@ -6,6 +6,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -29,16 +30,24 @@ namespace EasyLogEditor
 
                 foreach (var line in File.ReadAllLines(ofd.FileName))               
                 {
-                    if (line.Contains("JLTx"))
+                    // https://docs.microsoft.com/en-us/dotnet/standard/base-types/grouping-constructs-in-regular-expressions#matched_subexpression
+                    Regex regex = new Regex("(.*)JLTx\\((.*)\\):(JL_[(A-Z)_]*)\\((.*)\\)");
+
+                    var match = regex.Match(line);
+
+                    //if (line.Contains("JLTx"))
+                    //{
+                    //    string[] JLTx = line.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
+                    //    listView1.Items.Add(JLTx[0]);
+                    //    listView1.Items[listView1.Items.Count - 1].SubItems.Add(JLTx[1]);                            
+                    //}
+                    if (match.Success)
                     {
-
-
-
-
-                        string[] JLTx = line.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-                        listView1.Items.Add(JLTx[0]);
-                        listView1.Items[listView1.Items.Count - 1].SubItems.Add(JLTx[1]);    
-                        
+                        var row = listView1.Items.Add(line);
+                        foreach (var item in match.Groups)
+                        {
+                            row.SubItems.Add(item.ToString());
+                        }
                     }
                 }
                 //MakeReadable();
